@@ -1,0 +1,22 @@
+MysqlDetails:
+  Host: 127.0.0.1
+  User: root
+  Password: password
+  # This is the database that the uuids and names will be stored in
+  Database: LibsConverter
+  
+# These are the tables that are modified when a player with a new name logs in
+# Please note that all mysql stuff is case sensitive
+Tables:
+  # What this is called does not matter
+  ConvertzPermissions:
+    # The database the table is in
+    Database: zPermissions
+    # The name of the table
+    Table: memberships
+    # The field which contains the playernames
+    UserField: member
+  UpdateBanTable:
+    Database: Bans
+    Table: PlayerBans
+    UserField: Name
