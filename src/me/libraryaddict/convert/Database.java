@@ -3,6 +3,7 @@ package me.libraryaddict.convert;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -58,6 +59,34 @@ public class Database {
         return connection;
     }
 
+    private static void rename(TableInfo tableInfo, Statement stmt, String oldName, String playername) throws SQLException {
+        ResultSet rs = stmt.executeQuery("SELECT " + tableInfo.getUserField() + " FROM `" + tableInfo.getDatabase() + "`.`"
+                + tableInfo.getTable() + "` WHERE " + tableInfo.getUserField() + "=`" + playername + "`;");
+        rs.last();
+        int row = rs.getRow();
+        rs.close();
+        if (row > 0) {
+            System.out.println("Uh oh! " + playername + " isn't the same player as " + oldName
+                    + "! Going to change him to a random name");
+            int no = 0;
+            String name = playername;
+            while (row > 0) {
+                while ((name + no).length() > 16) {
+                    name = name.substring(0, name.length() - 1);
+                }
+                rs = stmt.executeQuery("SELECT " + tableInfo.getUserField() + " FROM `" + tableInfo.getDatabase() + "`.`"
+                        + tableInfo.getTable() + "` WHERE " + tableInfo.getUserField() + "=`" + (playername + no) + "`;");
+                rs.last();
+                row = rs.getRow();
+            }
+            System.out.print("Great! Going to name " + playername + " to the retarded name " + (name + no));
+            rename(tableInfo, stmt, playername, name + no);
+        }
+        stmt.execute("UPDATE `" + tableInfo.getDatabase() + "`.`" + tableInfo.getTable() + "` SET `" + tableInfo.getUserField()
+                + "` = '" + playername + "' WHERE `" + tableInfo.getDatabase() + "`.`" + tableInfo.getTable() + "`.`"
+                + tableInfo.getUserField() + "` = '" + oldName + "';");
+    }
+
     public static void onLogin(String uuid, String playername) {
         try {
             Statement stmt = getConnection().createStatement();
@@ -70,9 +99,7 @@ public class Database {
                 if (!oldName.equals(playername)) {
                     System.out.print(playername + " changed their name from " + oldName + ". Now converting the database");
                     for (TableInfo tableInfo : tableInfos) {
-                        stmt.execute("UPDATE `" + tableInfo.getDatabase() + "`.`" + tableInfo.getTable() + "` SET `"
-                                + tableInfo.getUserField() + "` = '" + playername + "' WHERE `" + tableInfo.getDatabase() + "`.`"
-                                + tableInfo.getTable() + "`.`" + tableInfo.getUserField() + "` = '" + oldName + "';");
+                        rename(tableInfo, stmt, oldName, playername);
                     }
                     stmt.execute("UPDATE `" + mysqlDatabase + "`.`NameStorage` SET `name` = '" + playername + "' WHERE `"
                             + mysqlDatabase + "`.`NameStorage`.`name` = '" + oldName + "';");
