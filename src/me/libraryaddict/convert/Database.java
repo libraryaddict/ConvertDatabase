@@ -43,7 +43,7 @@ public class Database {
             if (connection == null) {
                 connection = connectMysql();
                 Statement stmt = connection.createStatement();
-                stmt.execute("CREATE DATABASE IF NOT EXISTS TestDB");
+                stmt.execute("CREATE DATABASE IF NOT EXISTS " + mysqlDatabase);
                 stmt.execute("CREATE TABLE IF NOT EXISTS `" + mysqlDatabase + "`.`NameStorage` ( `uuid` varchar(50) NOT NULL, "
                         + "`name` varchar(16) NOT NULL,UNIQUE KEY `uuid` (`uuid`))");
                 return connection;
