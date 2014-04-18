@@ -2,7 +2,7 @@ MysqlDetails:
   Host: 127.0.0.1
   User: root
   Password: password
-  # This is the database that the uuids and names will be stored in
+  # This is the database that the uuids and names that this plugin will store will be in
   Database: LibsConverter
   
 # These are the tables that are modified when a player with a new name logs in

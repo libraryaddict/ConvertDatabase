@@ -9,7 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Level;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.notoriousdev.yamlconfig.configuration.file.YamlConfiguration;
 
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,7 +18,7 @@ import net.md_5.bungee.event.EventHandler;
 
 public class Bungee extends Plugin implements Listener {
     private Bungee bungee = this;
-    private File configFile = new File(this.getDataFolder(), "config.yml");
+    private File configFile;
 
     public InputStream getResource(String filename) {
         if (filename == null) {
@@ -40,6 +40,7 @@ public class Bungee extends Plugin implements Listener {
     }
 
     public void onEnable() {
+        configFile = new File(this.getDataFolder(), "config.yml");
         getProxy().getPluginManager().registerListener(this, this);
         saveDefaultConfig();
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
